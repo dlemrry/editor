@@ -1,89 +1,100 @@
-import React ,{useRef}from "react";
+import React, {useRef} from "react";
 import ReactDOM from "react-dom";
-import { Editor, EditorState, RichUtils } from "draft-js";
+import {Editor, EditorState, RichUtils} from "draft-js";
+import Grid from "@material-ui/core/Grid";
 import "draft-js/dist/Draft.css";
 import './RichEditor.css';
 
 //모든 문서의 효과는 setEditorState로 세팅해야함.
 
 function MyEditor() {
-  const [editorState, setEditorState] = React.useState(() => EditorState.createEmpty());
+    const [editorState, setEditorState] = React.useState(() => EditorState.createEmpty());
 
 
-  const handleKeyCommand = (command, editorState) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
+    const handleKeyCommand = (command, editorState) => {
+        const newState = RichUtils.handleKeyCommand(editorState, command);
 
-    if (newState) {
-      setEditorState(newState);
-      return "handled";
-    }
+        if (newState) {
+            setEditorState(newState);
+            return "handled";
+        }
 
-    return "not-handled";
-  };
+        return "not-handled";
+    };
 
-  const _toggleBlockType = (blockType) => {
-    setEditorState(RichUtils.toggleBlockType(editorState, blockType));
-  };
+    const _toggleBlockType = (blockType) => {
+        setEditorState(RichUtils.toggleBlockType(editorState, blockType));
+    };
 
-  const _toggleInlineStyle = (inlineStyle) => {
-    setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
-  };
-  const focuselement = useRef();
-  const givefocus = () => focuselement.current.editor.focus();
+    const _toggleInlineStyle = (inlineStyle) => {
+        setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+    };
+    const focuselement = useRef();
+    const givefocus = () => focuselement.current.editor.focus();
 
-  return (
-    <div className="RichEditor-root">
+    return (
+        <Grid container>
+            <Grid container item justify="center" xs={9}>
+                <div className="RichEditor-root">
 
 
-        <BlockStyleControls
-            editorState={editorState}
-            onToggle={_toggleBlockType}
-        />
-        <InlineStyleControls
-            editorState={editorState}
-            onToggle={_toggleInlineStyle}
-        />
-      <div className="RichEditor-editor" onClick={givefocus}>
-        <Editor
-          editorState={editorState}
-          onChange={setEditorState}
-          handleKeyCommand={handleKeyCommand}
-          ref={focuselement}
-          blockStyleFn={getBlockStyle}
-          placeholder="start write"
-        />
-      </div>
-    </div>
-  );
+                    <BlockStyleControls
+                        editorState={editorState}
+                        onToggle={_toggleBlockType}
+                    />
+                    <InlineStyleControls
+                        editorState={editorState}
+                        onToggle={_toggleInlineStyle}
+                    />
+                    <div className="RichEditor-editor" onClick={givefocus}>
+                        <Editor
+                            editorState={editorState}
+                            onChange={setEditorState}
+                            handleKeyCommand={handleKeyCommand}
+                            ref={focuselement}
+                            blockStyleFn={getBlockStyle}
+                            placeholder="start write"
+                        />
+                    </div>
+                </div>
+            </Grid>
+            <Grid item xs={3}>
+                toolbar
+
+
+
+            </Grid>
+        </Grid>
+    );
 }
 
 const getBlockStyle = (block) => {
-  switch (block.getType()) {
-    case "blockquote":
-      return "RichEditor-blockquote";
-    default:
-      return null;
-  }
+    switch (block.getType()) {
+        case "blockquote":
+            return "RichEditor-blockquote";
+        default:
+            return null;
+    }
 };
 
-const StyleButton =(props)=> {
- 
+const StyleButton = (props) => {
+
     const onToggle = (e) => {
-      e.preventDefault();
-      props.onToggle(props.style);
+        e.preventDefault();
+        props.onToggle(props.style);
     };
-  
+
     let className = "RichEditor-styleButton";
     if (props.active) {
-      className += " RichEditor-activeButton";
+        className += " RichEditor-activeButton";
     }
 
     return (
-      <span className={className} onMouseDown={onToggle}>
+        <span className={className} onMouseDown={onToggle}>
         {props.label}
       </span>
     );
-  
+
 }
 
 const BLOCK_TYPES = [
@@ -103,22 +114,22 @@ const BlockStyleControls = (props) => {
     const {editorState} = props;
     const selection = editorState.getSelection();
     const blockType = editorState
-      .getCurrentContent()
-      .getBlockForKey(selection.getStartKey())
-      .getType();
+        .getCurrentContent()
+        .getBlockForKey(selection.getStartKey())
+        .getType();
 
     return (
-      <div className="RichEditor-controls">
-        {BLOCK_TYPES.map((type) =>
-          <StyleButton
-            key={type.label}
-            active={type.style === blockType}
-            label={type.label}
-            onToggle={props.onToggle}
-            style={type.style}
-          />
-        )}
-      </div>
+        <div className="RichEditor-controls">
+            {BLOCK_TYPES.map((type) =>
+                <StyleButton
+                    key={type.label}
+                    active={type.style === blockType}
+                    label={type.label}
+                    onToggle={props.onToggle}
+                    style={type.style}
+                />
+            )}
+        </div>
     );
 };
 
@@ -131,21 +142,21 @@ var INLINE_STYLES = [
 
 const InlineStyleControls = (props) => {
     const currentStyle = props.editorState.getCurrentInlineStyle();
-    
+
     return (
-      <div className="RichEditor-controls">
-        {INLINE_STYLES.map((type) =>
-          <StyleButton
-            key={type.label}
-            active={currentStyle.has(type.style)}
-            label={type.label}
-            onToggle={props.onToggle}
-            style={type.style}
-          />
-        )}
-      </div>
+        <div className="RichEditor-controls">
+            {INLINE_STYLES.map((type) =>
+                <StyleButton
+                    key={type.label}
+                    active={currentStyle.has(type.style)}
+                    label={type.label}
+                    onToggle={props.onToggle}
+                    style={type.style}
+                />
+            )}
+        </div>
     );
-  };
+};
 
 
 export default MyEditor;

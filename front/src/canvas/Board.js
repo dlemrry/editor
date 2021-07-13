@@ -16,9 +16,7 @@ const Board2 = () => {
 class Board extends React.Component {
 
     timeout;
-    //socket;
-    socket = socketIOClient("http://13.125.51.192:8000");
-    //console.log('socket connect');
+    socket;
     ctx;
     isDrawing = false;
 
@@ -26,12 +24,17 @@ class Board extends React.Component {
     constructor(props) {
         super(props);
 
-        this.socket.on("canvas-data", function (data, propss) {
+
+    }
+
+    componentDidMount() {
+        this.drawOnCanvas();
+        this.socket= socketIOClient("http://13.125.51.192:8000");
+        this.socket.on("canvas-data", function (data) {
             console.log('canvas-data receive');
 
             var root = this;
 
-            console.log('interval');
             var interval = setInterval(function () {
                 if (root.isDrawing) return;
                 root.isDrawing = true;
@@ -48,13 +51,12 @@ class Board extends React.Component {
             }, 200)
 
         })
-
+        console.log('mounted '+this.socket.id);
 
     }
+    componentWillUnmount(){
+            this.socket.disconnect();
 
-    componentDidMount() {
-        this.drawOnCanvas();
-        //console.log('this sockid : '+this.socket.id);
     }
 
     componentWillReceiveProps(newProps) {
@@ -69,14 +71,9 @@ class Board extends React.Component {
 
         var sketch = document.querySelector('#sketch');
         var sketch_style = getComputedStyle(sketch);
-        //canvas.width = parseInt(window.innerWidth );
-        //canvas.height = parseInt(window.innerHeight );
         canvas.width = parseInt(sketch_style.getPropertyValue('width'));
         canvas.height = parseInt(sketch_style.getPropertyValue('height'));
-        //var abwidth = sketch.getBoundingClientRect().left;
-        //var abheight = window.pageYOffset + sketch.getBoundingClientRect().top;
         var mouse = {x: 0, y: 0};
-        //var mouse = {x: abwidth, y: abheight};
         var last_mouse = {x: 0, y: 0};
 
         /* mouse capture */
@@ -118,7 +115,6 @@ class Board extends React.Component {
                 root.socket.emit("canvas-data", base64ImageData);
                 console.log('canvas emit');
                 console.log('this sockid : ' + root.socket.id);
-                //console.log(root.socket);
             }, 500)
         };
     }

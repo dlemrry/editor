@@ -1,17 +1,17 @@
 import "./App.css";
 import Texteditor from "./texteditor/Texteditor";
 import React, {useState} from "react";
-import Editorselector from "./Editorselector";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import Box from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import Drawboard from './canvas/Drawboard';
+import Canvas from './canvas/Canvas';
 import Board from "./canvas/Board";
+import Main from "./Main";
 import {ControlPointDuplicate} from "@material-ui/icons";
-import {BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Switch, Link} from 'react-router-dom';
 import MyEditor from './texteditor/draft';
-
+import socketIOClient from 'socket.io-client';
 
 var socket;
 
@@ -53,11 +53,9 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
     const classes = useStyles();
-
+/*
     const [currentEditor, setCurrentEditor] = useState('0');
     //0 : texteditor , 1: painter
-    const [color, setColor] = useState("#000000");
-    const [size, setSize] = useState("5");
 
 
     const changeeditor = (e) => {
@@ -68,59 +66,52 @@ function App() {
         //console.log(socket);
 
     }
+*/
 
     return (
-        <div>
-            <Grid container className={classes.root} spacing={4}>
+        <Grid container className={classes.root} spacing={4}>
+            <BrowserRouter>
                 <Grid item className={classes.plate} xs={12}>
-                    Title
+                    <Link to="/">
+                        <Button color="primary">
+                            Title
+                        </Button>
+                    </Link>
                 </Grid>
 
                 <Grid item className={classes.editorselector} xs={12}>
                     editorselector
-                    <Button value={"0"} onClick={changeeditor} color="primary">
-                        texteditor
-                    </Button>
-                    <Button value={"1"} onClick={changeeditor} color="primary">
-                        painter
-                    </Button>
+                    <Link to="/editor">
+                        <Button color="primary">
+                            texteditor
+                        </Button>
+                    </Link>
+
+                    <Link to="/canvas">
+                        <Button color="primary">
+                            painter
+                        </Button>
+                    </Link>
+
                 </Grid>
 
                 <Grid item className={classes.sidemenu} xs={2}>
                     sidemenu
                 </Grid>
 
-                <Grid container className={classes.board} xs={10}>
-                    <Grid item xs={9}>
-                        workarea
+                <Grid container item className={classes.board} xs={10}>
 
-                        {currentEditor === '0' ?
-                            <MyEditor/>
-                            :
-                            <div>
-                                <div className="board-Drawboard">
-                                    <Board color={color} size={size}></Board>
-                                </div>
-                            </div>
-                        }
 
-                    </Grid>
-                    <Grid item xs={3}>
-                        toolbar
-                        {currentEditor === '0' ?
-                            <div>
-                            </div>
-                            :
-                            <div>
-                                <Drawboard currenteditor={currentEditor} size={size} color={color} setSize={setSize} setColor={setColor}/>
-                            </div>
-                        }
-                    </Grid>
+                    <Switch>
+                        <Route path="/" exact component={Main}></Route>
+                        <Route path="/editor" exact component={MyEditor}></Route>
+                        <Route path="/canvas" exact component={Canvas}></Route>
+                    </Switch>
+
 
                 </Grid>
-
-            </Grid>
-        </div>
+            </BrowserRouter>
+        </Grid>
     );
 }
 
