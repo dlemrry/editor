@@ -1,5 +1,11 @@
 
-
+.board-Drawboard {
+  width: 90%;
+  height: 90%;
+  margin: auto;
+  margin-top: 1%;
+  background: white;
+}
 
 .App {
   text-align: center;

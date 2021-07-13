@@ -1,62 +1,47 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Board from './Board';
 import Grid from "@material-ui/core/Grid";
 
 import './drawboardstyle.css';
 
-class Drawboard extends React.Component
-{
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            color: "#000000",
-            size: "5"
-        }
+const Drawboard = (props) => {
+
+    const changeColor = (params) => {
+        props.setColor(params.target.value);
     }
 
-    changeColor(params) {
-        this.setState({
-            color: params.target.value
-        })
+    const changeSize = (params) => {
+        props.setSize(params.target.value);
+
     }
 
-    changeSize(params) {
-        this.setState({
-            size: params.target.value
-        })
-    }
-
-    render() {
-
-        return (
-            <div className="Drawboard">
-                <div className="tools-section">
-                    <div className="color-picker-Drawboard">
-                        Select Brush Color : &nbsp; 
-                        <input type="color" value={this.state.color} onChange={this.changeColor.bind(this)}/>
-                    </div>
-
-                    <div className="brushsize-Drawboard">
-                        Select Brush Size : &nbsp; 
-                        <select value={this.state.size} onChange={this.changeSize.bind(this)}>
-                            <option> 5 </option>
-                            <option> 10 </option>
-                            <option> 15 </option>
-                            <option> 20 </option>
-                            <option> 25 </option>
-                            <option> 30 </option>
-                        </select>
-                    </div>
-
+    return (
+        <div className="Drawboard">
+            <div className="tools-section">
+                <div className="color-picker-Drawboard">
+                    Select Brush Color : &nbsp;
+                    <input type="color" value={props.color} onChange={changeColor.bind(this)}/>
                 </div>
 
-                <div className="board-Drawboard">
-                    <Board color={this.state.color} size={this.state.size}></Board>
+                <div className="brushsize-Drawboard">
+                    Select Brush Size : &nbsp;
+                    <select value={props.size} onChange={changeSize.bind(this)}>
+                        <option> 5</option>
+                        <option> 10</option>
+                        <option> 15</option>
+                        <option> 20</option>
+                        <option> 25</option>
+                        <option> 30</option>
+                    </select>
                 </div>
+
             </div>
-        )
-    }
+
+        </div>
+    )
+
 }
+
 
 export default Drawboard

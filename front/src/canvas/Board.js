@@ -1,41 +1,60 @@
-import React from 'react';
-import io from 'socket.io-client';
+import React, {useState} from 'react';
+//import io from 'socket.io-client';
+//import socketIOClient from 'socket.io-client';
+
+import socketIOClient from 'socket.io-client';
 import Grid from "@material-ui/core/Grid";
 import './boardstyle.css';
+
+
+const Board2 = () => {
+
+
+}
+
 
 class Board extends React.Component {
 
     timeout;
-    socket = io.connect("http://localhost:3000");
-
+    //socket;
+    socket = socketIOClient("http://13.125.51.192:8000");
+    //console.log('socket connect');
     ctx;
     isDrawing = false;
+
 
     constructor(props) {
         super(props);
 
-        this.socket.on("canvas-data", function(data){
+        this.socket.on("canvas-data", function (data, propss) {
+            console.log('canvas-data receive');
 
             var root = this;
-            var interval = setInterval(function(){
-                if(root.isDrawing) return;
+
+            console.log('interval');
+            var interval = setInterval(function () {
+                if (root.isDrawing) return;
                 root.isDrawing = true;
                 clearInterval(interval);
                 var image = new Image();
                 var canvas = document.querySelector('#board');
                 var ctx = canvas.getContext('2d');
-                image.onload = function() {
+                image.onload = function () {
                     ctx.drawImage(image, 0, 0);
 
                     root.isDrawing = false;
                 };
                 image.src = data;
             }, 200)
+
         })
+
+
     }
 
     componentDidMount() {
         this.drawOnCanvas();
+        //console.log('this sockid : '+this.socket.id);
     }
 
     componentWillReceiveProps(newProps) {
@@ -60,8 +79,8 @@ class Board extends React.Component {
         //var mouse = {x: abwidth, y: abheight};
         var last_mouse = {x: 0, y: 0};
 
-        /* Mouse Capturing Work */
-        canvas.addEventListener('mousemove', function(e) {
+        /* mouse capture */
+        canvas.addEventListener('mousemove', function (e) {
             last_mouse.x = mouse.x;
             last_mouse.y = mouse.y;
 
@@ -70,33 +89,37 @@ class Board extends React.Component {
         }, false);
 
 
-        /* Drawing on Paint App */
+        /* draw */
         ctx.lineWidth = this.props.size;
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         ctx.strokeStyle = this.props.color;
 
-        canvas.addEventListener('mousedown', function(e) {
+        canvas.addEventListener('mousedown', function (e) {
             canvas.addEventListener('mousemove', onPaint, false);
+
         }, false);
 
-        canvas.addEventListener('mouseup', function() {
+        canvas.addEventListener('mouseup', function () {
             canvas.removeEventListener('mousemove', onPaint, false);
         }, false);
 
         var root = this;
-        var onPaint = function() {
+        var onPaint = function () {
             ctx.beginPath();
             ctx.moveTo(last_mouse.x, last_mouse.y);
             ctx.lineTo(mouse.x, mouse.y);
             ctx.closePath();
             ctx.stroke();
 
-            if(root.timeout !== undefined) clearTimeout(root.timeout);
-            root.timeout = setTimeout(function(){
+            if (root.timeout !== undefined) clearTimeout(root.timeout);
+            root.timeout = setTimeout(function () {
                 var base64ImageData = canvas.toDataURL("image/png");
                 root.socket.emit("canvas-data", base64ImageData);
-            }, 250)
+                console.log('canvas emit');
+                console.log('this sockid : ' + root.socket.id);
+                //console.log(root.socket);
+            }, 500)
         };
     }
 
