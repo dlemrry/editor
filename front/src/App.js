@@ -1,5 +1,4 @@
 import "./App.css";
-import Texteditor from "./texteditor/Texteditor";
 import React, {useState} from "react";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
@@ -10,10 +9,11 @@ import Board from "./canvas/Board";
 import Main from "./Main";
 import {ControlPointDuplicate} from "@material-ui/icons";
 import {BrowserRouter, Route, Switch, Link} from 'react-router-dom';
-import MyEditor from './texteditor/draft';
-import socketIOClient from 'socket.io-client';
+import MyEditor from './texteditor/MyEditor';
+import Simplequill from './texteditor/Simplequill';
+//import socketIOClient from 'socket.io-client';
 
-var socket;
+//var socket;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -104,7 +104,7 @@ function App() {
 
                     <Switch>
                         <Route path="/" exact component={Main}></Route>
-                        <Route path="/editor" exact component={MyEditor}></Route>
+                        <Route path="/editor" exact component={Simplequill}></Route>
                         <Route path="/canvas" exact component={Canvas}></Route>
                     </Switch>
 

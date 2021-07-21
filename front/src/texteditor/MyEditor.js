@@ -1,9 +1,9 @@
 import React, {useRef} from "react";
 import ReactDOM from "react-dom";
-import {Editor, EditorState, RichUtils} from "draft-js";
+import {Editor, EditorState, RichUtils,convertFromRaw,convertToRaw} from "draft-js";
 import Grid from "@material-ui/core/Grid";
 import "draft-js/dist/Draft.css";
-import './RichEditor.css';
+import './myeditor.css';
 
 //모든 문서의 효과는 setEditorState로 세팅해야함.
 
@@ -23,7 +23,9 @@ function MyEditor() {
     };
 
     const _toggleBlockType = (blockType) => {
+        //console.log("prev state : "+JSON.stringify(editorState));
         setEditorState(RichUtils.toggleBlockType(editorState, blockType));
+        //console.log("new state : "+JSON.stringify(editorState));
     };
 
     const _toggleInlineStyle = (inlineStyle) => {

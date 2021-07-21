@@ -1,6 +1,7 @@
 
 .RichEditor-root {
-  width:80%;
+    width:80%;
+  height:auto;
     background: #fff;
     border: 1px solid #ddd;
     font-family: 'Georgia', serif;
@@ -24,7 +25,7 @@
   }
   
   .RichEditor-editor .public-DraftEditor-content {
-    min-height: 400px;
+    min-height: 200px;
   }
   
   .RichEditor-hidePlaceholder .public-DraftEditorPlaceholder-root {
