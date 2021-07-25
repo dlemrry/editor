@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 import socketIOClient from 'socket.io-client';
 import Grid from "@material-ui/core/Grid";
 import './boardstyle.css';
-
+import {socket} from './../socket'
 
 const Board2 = () => {
 
@@ -16,7 +16,7 @@ const Board2 = () => {
 class Board extends React.Component {
 
     timeout;
-    socket;
+    //socket;
     ctx;
     isDrawing = false;
 
@@ -28,8 +28,22 @@ class Board extends React.Component {
     }
 
     componentDidMount() {
+        this.socket=socket;
+        /*
+        if(!this.props.socket){
+            this.socket=socketIOClient("http://13.125.51.192:8000");
+            setTimeout(()=>console.log('just made socket : ' + this.socket.id),2000)
+        }
+        else{
+            this.socket=this.props.socket;
+        }
+*/
         this.drawOnCanvas();
-        this.socket= socketIOClient("http://13.125.51.192:8000");
+        //this.socket= socketIOClient("http://13.125.51.192:8000");
+        console.log(this.socket.id);
+
+        this.socket.emit('join-painter');
+
         this.socket.on("canvas-data", function (data) {
             console.log('canvas-data receive');
 
@@ -52,10 +66,9 @@ class Board extends React.Component {
 
         })
         console.log('mounted '+this.socket.id);
-
     }
     componentWillUnmount(){
-            this.socket.disconnect();
+            //this.socket.disconnect();
 
     }
 

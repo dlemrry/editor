@@ -1,46 +1,71 @@
 import React, {useState, useRef, useEffect} from "react";
 import ReactDOM from "react-dom";
+import { useLocation } from "react-router-dom";
 import ReactQuill, {Quill} from 'react-quill';
 //import quill from 'quill';
 import 'react-quill/dist/quill.snow.css';
 import Grid from "@material-ui/core/Grid";
 import "./quill.css";
 import socketIOClient from 'socket.io-client';
+import {makeStyles} from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
+import Divider from '@material-ui/core/Divider';
+import {socket} from './../socket'
+const useStyles = makeStyles((theme) => ({
 
-const Simplequill = () => {
+    quillbackground: {
+        height: "100%",
+        //padding: theme.spacing(2),
+        backgroundColor:'white'
+    },
+    texteditor:{
+        height: "80vh",
+    },
+    toolbar: {
+        height: "100%",
+        paddingLeft: theme.spacing(2),
+        //padding: theme.spacing(2),
+    },
+    toolbarpaper:{
+        height :'80%'
+    }
+}));
+
+
+const Simplequill = (props) => {
+    const classes = useStyles();
     const [value, setValue] = useState('');
     const [mounted, setmounted] = useState(0);
     const [quill, setQuill] = useState(null);
-    var socket;
+    //var socket;
     const elementRef = useRef(null);
 
-
-    //var tempquill = new Quill.Delta();
-    /*var container = document.getElementById('.quillsize');
-    var options = {
-        debug: 'info',
-        modules: {
-            toolbar: '#toolbar'
-        },
-        placeholder: 'Compose an epic...',
-        readOnly: true,
-        theme: 'snow'
-    };
-    var tempquill = new Quill(container,options);
-*/
-    const currenteditor = useRef();
-    //editor.getContents() 로 델타 얻음
-    //onchange 에서 handler(content,delta,source,editor) 함수로
     var initialcontents;
+    var loc=useLocation();
     useEffect(() => {
-        //var editor;
 
+    var file;
+
+        //var socket;
         console.log('open texteditor');
-        const socket = socketIOClient("http://13.125.51.192:8000");
-        //var initialcontents ;
+        /*
+        if(!props.socket){
+             socket=socketIOClient("http://13.125.51.192:8000");
+        }
+        else{
+            socket = props.socket;
+        }
+        */
+        if(!loc.state){
+            file='';
+        }
+        else{
+            file=loc.state.file;
+        }
+
+        socket.emit('join-texteditor');
 
 
-        //if (!quill) {
 
         const editor = new Quill("#editor", {
             theme: "snow",
@@ -66,7 +91,6 @@ const Simplequill = () => {
                 ]
             }
         });
-        //setQuill(editor);
 
         socket.on('initial', (delta) => {
             initialcontents = delta;
@@ -85,9 +109,7 @@ const Simplequill = () => {
                 socket.emit('updatecontents', editor.getContents());
                 //console.log(socket.id)
             }
-
-
-        });
+        }); // updatecontents only when source is from other clients
 
 
         socket.on('deltaupdate', (delta) => {
@@ -96,16 +118,17 @@ const Simplequill = () => {
 
         });
 
-        //}
 
 
         return () => {
             console.log('leaving texteditor');
-            socket.disconnect();
+            socket.emit('leave-texteditor');
+
+            //socket.disconnect();
 
         }
     }, []);
-    //empty array in useEffect will render once
+    //empty array in useEffect will make this effect render once
 
 
     //<div className="quillsize">
@@ -114,16 +137,15 @@ const Simplequill = () => {
     return (
 
 
-        <Grid container>
+        <Grid container className={classes.texteditor}>
 
-            <Grid container item justify="center" xs={9}>
+            <Grid container item justify="center" xs={9} className={classes.quillbackground}>
                 <div className="quillsize">
                     <div id="editor" ref={elementRef}/>
                 </div>
             </Grid>
-            <Grid item xs={3}>
-                toolbar
-
+            <Grid item xs={3} className={classes.toolbar}>
+                <Paper elevation={6} className={classes.toolbarpaper}></Paper>
             </Grid>
         </Grid>
 
