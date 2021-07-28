@@ -42,7 +42,6 @@ class Board extends React.Component {
         //this.socket= socketIOClient("http://13.125.51.192:8000");
         console.log(this.socket.id);
 
-        this.socket.emit('join-painter');
 
         this.socket.on("canvas-data", function (data) {
             console.log('canvas-data receive');

@@ -2,7 +2,7 @@
   "name": "editor",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://13.125.51.192:8000",
+  "proxy": "http://13.124.99.221:8000",
   "dependencies": {
     "@material-ui/core": "^4.12.1",
     "@material-ui/icons": "^4.11.2",
@@ -27,7 +27,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": " HTTPS=true&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

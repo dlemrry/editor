@@ -1,16 +1,18 @@
 import "./App.css";
 
 import logo2 from './static/logo2.png'
-import React, {useState,useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import Box from "@material-ui/core/Paper";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
+import {RadioGroup, Radio, FormControlLabel, TextField} from '@material-ui/core';
 import Canvas from './canvas/Canvas';
 import Board from "./canvas/Board";
 import Main from "./Main";
 import {ControlPointDuplicate} from "@material-ui/icons";
+import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import {BrowserRouter, Route, Switch, Link} from 'react-router-dom';
 import MyEditor from './texteditor/MyEditor';
 import Simplequill from './texteditor/Simplequill';
@@ -29,6 +31,9 @@ import MailIcon from '@material-ui/icons/Mail';
 import Typography from '@material-ui/core/Typography';
 import socketIOClient from 'socket.io-client';
 import {socket} from './socket'
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
 //var socket;
 
 const useStyles = makeStyles((theme) => ({
@@ -75,6 +80,23 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         marginBottom: theme.spacing(1),
     },
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalpaper: {
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
+    form: {
+        '& .MuiTextField-root': {
+            margin: theme.spacing(1),
+            width: 200,
+        },
+    },
     drawerbutton: {},
 }));
 
@@ -87,13 +109,52 @@ function App() {
 
     useEffect(() => {
 
-        if(!socket) {
-            socket = socketIOClient("http://13.125.51.192:8000");
-            setTimeout(()=>console.log('user join : '+ socket.id),2000);
+        if (!socket) {
+            socket = socketIOClient("http://13.124.99.221:8000");
+            setTimeout(() => console.log('user join : ' + socket.id), 2000);
         }
 
     }, []);
 
+    const [open, setOpen] = React.useState(false);
+
+    var file = [];
+
+    const [filelist, setfilelist] = useState(file);
+    const [filename, setfilename] = useState("");
+    const [password, setPassword] = useState("");
+    const [fileselect, setfileselect] = useState("text editor");
+
+    const handlefilename = ({target: {value}}) => setfilename(value);
+    const handlepassword = ({target: {value}}) => setPassword(value);
+    const handlefileselect = ({target: {value}}) => setfileselect(value);
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        let tempfile = new Object();
+        tempfile.name = filename;
+        tempfile.password = password;
+        tempfile.fileselect = fileselect;
+        tempfile.socketid=socket.id;
+        filelist.push(tempfile);
+        setOpen(false);
+        socket.emit('file-created',tempfile);
+        //alert('file created : '+filename + ', '  +fileselect);
+    };
+
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handlefileclick =(event)=>{
+        event.preventDefault();
+
+    };
 
     const [state, setState] = React.useState({
         top: false,
@@ -130,8 +191,8 @@ function App() {
             <List>
                 <ListItem button component={Link} to={{
                     pathname: "/editor",
-                    state:{
-                        file :'aaa'
+                    state: {
+                        file: 'aaa'
                     }
                 }
                 }>
@@ -140,8 +201,8 @@ function App() {
                 </ListItem>
                 <ListItem button component={Link} to={{
                     pathname: "/canvas",
-                    state:{
-                       file :'aaa'
+                    state: {
+                        file: 'aaa'
                     }
                 }
                 }>
@@ -171,6 +232,56 @@ function App() {
 
 
                         <Grid container item justifyContent='flex-end'>
+                            <React.Fragment>
+                                <Button onClick={handleOpen}>
+                                    <ControlPointIcon/>
+                                </Button>
+                                <Modal
+                                    aria-labelledby="transition-modal-title"
+                                    aria-describedby="transition-modal-description"
+                                    className={classes.modal}
+                                    open={open}
+                                    onClose={handleClose}
+                                    closeAfterTransition
+                                    BackdropComponent={Backdrop}
+                                    BackdropProps={{
+                                        timeout: 500,
+                                    }}
+                                >
+                                    <Fade in={open}>
+                                        <div className={classes.modalpaper}>
+                                            <form className={classes.form} onSubmit={handleSubmit}>
+                                                <RadioGroup aria-label="select editor" name="editkind"
+                                                            value={fileselect} onChange={handlefileselect}>
+                                                    <FormControlLabel value="text editor" control={<Radio/>}
+                                                                      label="text editor"/>
+                                                    <FormControlLabel value="canvas" control={<Radio/>} label="canvas"/>
+                                                </RadioGroup>
+                                                <div>
+                                                    <TextField
+                                                        required
+                                                        id="filename"
+                                                        label="file name"
+                                                        value={filename}
+                                                        onChange={handlefilename}
+                                                    />
+                                                    <TextField
+                                                        required
+                                                        id="password"
+                                                        label="password"
+                                                        type="password"
+                                                        value={password}
+                                                        onChange={handlepassword}
+                                                    />
+                                                </div>
+                                                <button type="submit">
+                                                    create file
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </Fade>
+                                </Modal>
+                            </React.Fragment>
                             {['left'].map((anchor) => (
                                 <React.Fragment key={anchor}>
                                     <Button onClick={toggleDrawer(anchor, true)}>
@@ -183,6 +294,23 @@ function App() {
                         </Grid>
                         <Divider/>
                         <Grid item justifyContent='center'>
+                            <List>
+                                {filelist.map((file, index) => {
+                                    return file.fileselect == 'text editor' ?
+                                        <ListItem key={index} button onClick={handlefileclick}>
+                                            <ListItemIcon> <DescriptionIcon/> </ListItemIcon>
+                                            <ListItemText primary={file.name}/>
+                                        </ListItem>
+                                        :
+                                        <ListItem key={index} button onClick={handlefileclick}>
+                                            <ListItemIcon> <BrushIcon/> </ListItemIcon>
+                                            <ListItemText primary={file.name}/>
+                                        </ListItem>
+
+                                    }
+                                )}
+
+                            </List>
                             <Typography variant="h5" gutterBottom align='center'> current drafts </Typography>
                             <Typography variant="subtitle1" align='center'> you can create or </Typography>
                             <Typography variant="subtitle1" align='center'> load existing documents </Typography>
@@ -194,8 +322,8 @@ function App() {
 
                     <Switch>
                         <Route path="/" exact component={Main}></Route>
-                        <Route path="/editor" exact component={Simplequill} />
-                        <Route path="/canvas" exact  component={Canvas} />
+                        <Route path="/editor" exact component={Simplequill}/>
+                        <Route path="/canvas" exact component={Canvas}/>
 
                     </Switch>
 
