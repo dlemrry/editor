@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
         height: "100%",
         //padding: theme.spacing(2),
         paddingRight: theme.spacing(2),
+        backgroundColor: 'white'
     },
     toolbar: {
         height: "100%",
@@ -55,20 +56,26 @@ const Canvas = (props) => {
     const classes = useStyles();
     const [color, setColor] = useState("#000000");
     const [size, setSize] = useState("3");
-    //const [filename, setfilename] = useState('');
-
+    const [filename, setfilename] = useState('');
 
 
     if(!loc.state){
-        file='';
+        file.name='maincanvas';
+        file.type='canvas';
     }
     else{
         file=loc.state.file;
-        //setfilename(file.name);
+
     }
-    console.log('file name : '+ file.name)
+
+
 
     useEffect(() => {
+
+
+        setfilename(file.name);
+
+        console.log('file name : '+ file.name)
 
         socket.emit('user-join',file);
         console.log('join painter');
@@ -113,6 +120,9 @@ const Canvas = (props) => {
         <Grid container item className={classes.painter}>
 
             <Grid item justify="center" xs={9} className={classes.paintboard}>
+                <Grid item>
+                    <Typography variant="h5" >{filename} </Typography>
+                </Grid>
 
                 <Box border={1} className="board-Drawboard">
                     <Board color={color} size={size} file={file} ></Board>

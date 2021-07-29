@@ -30,6 +30,7 @@ class Board extends React.Component {
     componentDidMount() {
         this.socket=socket;
         this.file=this.props.file;
+
         /*
         if(!this.props.socket){
             this.socket=socketIOClient("http://13.125.51.192:8000");
@@ -67,6 +68,8 @@ class Board extends React.Component {
             }, 200)
 
         })
+        console.log(JSON.stringify(this.file));
+        console.log(JSON.stringify(this.props.file));
         console.log('mounted '+this.socket.id);
     }
     componentWillUnmount(){
