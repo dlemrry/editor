@@ -52,36 +52,53 @@ const Canvas = (props) => {
     var users = [];
     const [userlist, setuserlist] = useState(users);
 
-
-
-    useEffect(() => {
-
-        socket.emit('join-painter');
-        console.log('join painter');
-
-
-        socket.on('painter-user-update', (list) => {
-            setuserlist(list)
-            console.log(userlist);
-
-        });
-
-        return () => {
-            console.log('leaving painter');
-            socket.emit('leave-painter');
-
-            //socket.disconnect();
-
-        }
-    }, []);
-
     if(!loc.state){
         file='';
     }
     else{
         file=loc.state.file;
     }
-    console.log('file name : '+ file)
+    console.log('file name : '+ file.name)
+
+    useEffect(() => {
+
+        socket.emit('user-join',file);
+        console.log('join painter');
+
+
+        socket.on('user-update', (list) => {
+            setuserlist(list)
+            console.log('initial userlist : '+JSON.stringify(list));
+
+        });
+
+        /*
+        socket.on('global-user-left', (id) => {
+
+            let index = userlist.findIndex((element, index, arr) => element.id === id);
+            //setuserlist delete
+            console.log('before userlist :'+JSON.stringify(userlist));
+            let templist = userlist;
+            console.log('templist : '+JSON.stringify(templist));
+            templist.splice(index, 1);
+            //serlist.splice(index, 1);
+            console.log('templist delete'+JSON.stringify(templist));
+            setuserlist(templist);
+            console.log(userlist);
+
+        });
+*/
+
+        return () => {
+            console.log('leaving painter');
+            socket.emit('user-leave',file);
+
+            //socket.disconnect();
+
+        }
+    }, []);
+
+
 
     const classes = useStyles();
     const [color, setColor] = useState("#000000");
@@ -92,7 +109,7 @@ const Canvas = (props) => {
             <Grid item justify="center" xs={9} className={classes.paintboard}>
 
                 <Box border={1} className="board-Drawboard">
-                    <Board color={color} size={size} ></Board>
+                    <Board color={color} size={size} file={file} ></Board>
                 </Box>
             </Grid>
             <Grid item xs={3} className={classes.toolbar}>

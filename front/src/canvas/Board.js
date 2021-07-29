@@ -29,6 +29,7 @@ class Board extends React.Component {
 
     componentDidMount() {
         this.socket=socket;
+        this.file=this.props.file;
         /*
         if(!this.props.socket){
             this.socket=socketIOClient("http://13.125.51.192:8000");
@@ -45,6 +46,7 @@ class Board extends React.Component {
 
         this.socket.on("canvas-data", function (data) {
             console.log('canvas-data receive');
+            console.log(JSON.stringify(data));
 
             var root = this;
 
@@ -53,6 +55,7 @@ class Board extends React.Component {
                 root.isDrawing = true;
                 clearInterval(interval);
                 var image = new Image();
+
                 var canvas = document.querySelector('#board');
                 var ctx = canvas.getContext('2d');
                 image.onload = function () {
@@ -124,7 +127,8 @@ class Board extends React.Component {
             if (root.timeout !== undefined) clearTimeout(root.timeout);
             root.timeout = setTimeout(function () {
                 var base64ImageData = canvas.toDataURL("image/png");
-                root.socket.emit("canvas-data", base64ImageData);
+                root.socket.emit("canvas-data", {image:base64ImageData, name:root.file.name});
+                //root.socket.emit("canvas-data", base64ImageData);
                 console.log('canvas emit');
                 console.log('this sockid : ' + root.socket.id);
             }, 500)

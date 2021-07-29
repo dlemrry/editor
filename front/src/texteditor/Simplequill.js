@@ -58,26 +58,18 @@ const Simplequill = (props) => {
     useEffect(() => {
 
 
-        var file;
+        var file ;
 
-        //var socket;
         console.log('open texteditor');
-        /*
-        if(!props.socket){
-             socket=socketIOClient("http://13.125.51.192:8000");
-        }
-        else{
-            socket = props.socket;
-        }
-        */
+
         if (!loc.state) {
             file = '';
         } else {
-            file = loc.state.file;
+            file= loc.state.file;
+            console.log(file.name);
         }
 
-        socket.emit('join-texteditor');
-
+        //socket.emit('join-texteditor',file);
 
         const editor = new Quill("#editor", {
             theme: "snow",
@@ -104,6 +96,8 @@ const Simplequill = (props) => {
             }
         });
 
+        socket.emit('user-join',file);
+
         socket.on('initial', (delta) => {
             initialcontents = delta;
             //console.log('init from server : ' + JSON.stringify(initialcontents));
@@ -111,7 +105,7 @@ const Simplequill = (props) => {
             console.log('initial contents : ' + JSON.stringify(editor.getContents()));
         });
 
-        socket.on('texteditor-user-update', (list) => {
+        socket.on('user-update', (list) => {
             setuserlist(list)
             console.log(userlist);
 
@@ -124,8 +118,9 @@ const Simplequill = (props) => {
             } else if (source == 'user') {
                 //console.log("A user action triggered this change.");
                 //console.log(JSON.stringify(delta));
-                socket.emit('send-delta', delta);
-                socket.emit('updatecontents', editor.getContents());
+                socket.emit('send-delta', {delta:delta, name:file.name });
+                console.log('send delta of: '+file.name);
+                socket.emit('updatecontents', {content:editor.getContents(), name:file.name });
                 //console.log(socket.id)
             }
         }); // updatecontents only when source is from other clients
@@ -137,10 +132,19 @@ const Simplequill = (props) => {
 
         });
 
+        socket.on('global-user-left', (id) => {
+
+            let index = userlist.findIndex((element, index, arr) => element.id === id);
+            userlist.splice(index, 1);
+            //setuserlist(list)
+            console.log(userlist);
+
+        });
+
 
         return () => {
             console.log('leaving texteditor');
-            socket.emit('leave-texteditor');
+            socket.emit('user-leave',file);
 
             //socket.disconnect();
 

@@ -192,7 +192,10 @@ function App() {
                 <ListItem button component={Link} to={{
                     pathname: "/editor",
                     state: {
-                        file: 'aaa'
+                        file: {
+                            name:'maintexteditor',
+                            type:'texteditor'
+                        }
                     }
                 }
                 }>
@@ -202,7 +205,7 @@ function App() {
                 <ListItem button component={Link} to={{
                     pathname: "/canvas",
                     state: {
-                        file: 'aaa'
+                        file: {name:'maincanvas',type:'canvas'}
                     }
                 }
                 }>
