@@ -30,7 +30,7 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import Typography from '@material-ui/core/Typography';
 import socketIOClient from 'socket.io-client';
-import {socket} from './socket'
+import {socket,host} from './socket'
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
@@ -107,14 +107,7 @@ function App() {
 
     const classes = useStyles();
 
-    useEffect(() => {
 
-        if (!socket) {
-            socket = socketIOClient("http://13.124.99.221:8000");
-            setTimeout(() => console.log('user join : ' + socket.id), 2000);
-        }
-
-    }, []);
 
     const [open, setOpen] = React.useState(false);
 
@@ -128,6 +121,22 @@ function App() {
     const handlefilename = ({target: {value}}) => setfilename(value);
     const handlepassword = ({target: {value}}) => setPassword(value);
     const handlefileselect = ({target: {value}}) => setfileselect(value);
+
+    useEffect(() => {
+
+        if (!socket) {
+            socket = socketIOClient(host);
+            setTimeout(() => console.log('user join : ' + socket.id), 2000);
+        }
+
+        socket.emit('get-filelist');
+        socket.on('filelist-update', (filelist) => {
+            setfilelist(filelist);
+
+        });
+
+    }, []);
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -152,6 +161,7 @@ function App() {
     };
 
     const handlefileclick =(event)=>{
+
         event.preventDefault();
 
     };
@@ -300,12 +310,25 @@ function App() {
                             <List>
                                 {filelist.map((file, index) => {
                                     return file.fileselect == 'text editor' ?
-                                        <ListItem key={index} button onClick={handlefileclick}>
+                                        <ListItem key ={index} button component={Link} to={{
+                                            pathname: "/editor",
+                                            state: {
+                                                file: {name: file.name,type:'texteditor'}
+                                            }
+                                        }
+                                        }>
                                             <ListItemIcon> <DescriptionIcon/> </ListItemIcon>
                                             <ListItemText primary={file.name}/>
                                         </ListItem>
+
                                         :
-                                        <ListItem key={index} button onClick={handlefileclick}>
+                                        <ListItem key ={index} button component={Link} to={{
+                                            pathname: "/canvas",
+                                            state: {
+                                                file: {name: file.name,type:'canvas'}
+                                            }
+                                        }
+                                        }>
                                             <ListItemIcon> <BrushIcon/> </ListItemIcon>
                                             <ListItemText primary={file.name}/>
                                         </ListItem>

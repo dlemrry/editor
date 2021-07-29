@@ -20,7 +20,7 @@ import socketIOClient from 'socket.io-client';
 import {makeStyles} from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Divider from '@material-ui/core/Divider';
-import {socket} from './../socket'
+import {socket,host} from './../socket'
 
 const useStyles = makeStyles((theme) => ({
 
@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 const Simplequill = (props) => {
     const classes = useStyles();
     const [value, setValue] = useState('');
+    const [filename, setfilename] = useState('');
     const [mounted, setmounted] = useState(0);
     const [quill, setQuill] = useState(null);
     //var socket;
@@ -55,10 +56,11 @@ const Simplequill = (props) => {
     const [userlist, setuserlist] = useState(users);
     var initialcontents;
     var loc = useLocation();
+    var file ;
     useEffect(() => {
 
 
-        var file ;
+
 
         console.log('open texteditor');
 
@@ -67,6 +69,7 @@ const Simplequill = (props) => {
         } else {
             file= loc.state.file;
             console.log(file.name);
+            setfilename(file.name);
         }
 
         //socket.emit('join-texteditor',file);
@@ -99,9 +102,10 @@ const Simplequill = (props) => {
         socket.emit('user-join',file);
 
         socket.on('initial', (delta) => {
-            initialcontents = delta;
+            //initialcontents = delta;
+            console.log(delta);
             //console.log('init from server : ' + JSON.stringify(initialcontents));
-            editor.setContents(initialcontents);
+            console.log('set content '+ JSON.stringify(editor.setContents(delta)));
             console.log('initial contents : ' + JSON.stringify(editor.getContents()));
         });
 
@@ -162,6 +166,9 @@ const Simplequill = (props) => {
         <Grid container className={classes.texteditor}>
 
             <Grid container item justify="center" xs={9} className={classes.quillbackground}>
+                <Grid item>
+                    <Typography variant="h5" >{filename} </Typography>
+                </Grid>
                 <div className="quillsize">
                     <div id="editor" ref={elementRef}/>
                 </div>

@@ -47,7 +47,8 @@ const upload = multer({
 
 
 var io = require('socket.io')(http, {cors: {origin: "*"}});
-var emptycontents = '{"ops":[{"attributes":{"indent":4},"insert":"\\n"}]}';
+var emptycontents = `{"ops":[{"attributes":{"indent":4},"insert":"\\n"}]}`;
+var emptyimage="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==";
 console.log(emptycontents);
 //var currentcontents = emptycontents;
 var texteditorcontents=new Array();
@@ -65,7 +66,7 @@ var filelist=new Array();
 
 
 //main canvas init
-fs.writeFile('./uploads/maincanvas' , "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==" ,function(err){
+fs.writeFile('./uploads/maincanvas' , emptyimage ,function(err){
     if (err === null)
     { console.log('main canvas created'); }
     else
@@ -74,7 +75,7 @@ fs.writeFile('./uploads/maincanvas' , "data:image/png;base64,iVBORw0KGgoAAAANSUh
 
 //main texteditor init
 
-fs.writeFile('./uploads/maintexteditor' , JSON.stringify(emptycontents) ,function(err){
+fs.writeFile('./uploads/maintexteditor' , emptycontents ,function(err){
     if (err === null)
     { console.log('main texteditor created'); }
     else
@@ -98,7 +99,8 @@ fs.readdir('./uploads',function(err,filelist){
 const texteditorcontentssave = () => {
     console.log('context saving...');
     for(let i=0; i<texteditorcontents.length; i++){
-        fs.writeFile('./uploads/'+ texteditorcontents[i].name , JSON.stringify(texteditorcontents[i].contents) ,function(err){
+        console.log(texteditorcontents[i].contents);
+        fs.writeFile('./uploads/'+ texteditorcontents[i].name , texteditorcontents[i].contents ,function(err){
             //console.log(texteditorcontents[i].contents);
             if (err === null)            {
                 //console.log(file+' send saved');
@@ -125,7 +127,11 @@ io.on('connection', (socket) => {
 
 
     socket.on('user-join',(file) => {
+        if(!file.name ){
+            return ;
+        }
         var index = userlist.findIndex((element, index, arr) => element.name === file.name);
+
         let user = new Object();
         user.id = socket.id;
         console.log(index);
@@ -141,7 +147,7 @@ io.on('connection', (socket) => {
                 console.log(data+' read');
                 //currentdata=data;
                 if(file.type ==='texteditor'){
-                    socket.emit('initial',data);
+                    socket.emit('initial',JSON.parse(data));
                 }
                 else{
                     socket.emit('canvas-data',data);
@@ -200,8 +206,9 @@ io.on('connection', (socket) => {
     socket.on('updatecontents', (data) => {
 
         let index = texteditorcontents.findIndex((element, index, arr) => element.name === data.name);
-        console.log(data.name+' index : '+index);
-        texteditorcontents[index].contents = data.content;
+        //console.log(data.name+' index : '+index);
+        //console.log(JSON.stringify(data.content));
+        texteditorcontents[index].contents = JSON.stringify(data.content);
 
     })
 
@@ -237,7 +244,7 @@ io.on('connection', (socket) => {
         });
         }
         else{
-            fs.writeFile('./uploads/'+tempfile.name , "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==" ,function(err){
+            fs.writeFile('./uploads/'+tempfile.name , emptyimage ,function(err){
                 if (err === null){
                     console.log('canvas created');
                     var temp = new Object();
@@ -250,7 +257,21 @@ io.on('connection', (socket) => {
             });
         }
 
+        filelist.push(tempfile);
+        socket.broadcast.emit('filelist-update',filelist);
     });
+
+    socket.on('get-filelist', () => {
+        //let room = io.sockets.manager.roomClients[socket.id];
+
+        /////////////////////
+
+        socket.emit('filelist-update',filelist);
+        //io.to(file).emit('user-update',userlist[index].list);
+
+
+    })
+
 
     socket.on('open-file', (file) => {
         //let room = io.sockets.manager.roomClients[socket.id];

@@ -46,7 +46,7 @@ class Board extends React.Component {
 
         this.socket.on("canvas-data", function (data) {
             console.log('canvas-data receive');
-            console.log(JSON.stringify(data));
+            //console.log(JSON.stringify(data));
 
             var root = this;
 

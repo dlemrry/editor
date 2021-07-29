@@ -52,11 +52,19 @@ const Canvas = (props) => {
     var users = [];
     const [userlist, setuserlist] = useState(users);
 
+    const classes = useStyles();
+    const [color, setColor] = useState("#000000");
+    const [size, setSize] = useState("3");
+    //const [filename, setfilename] = useState('');
+
+
+
     if(!loc.state){
         file='';
     }
     else{
         file=loc.state.file;
+        //setfilename(file.name);
     }
     console.log('file name : '+ file.name)
 
@@ -100,12 +108,10 @@ const Canvas = (props) => {
 
 
 
-    const classes = useStyles();
-    const [color, setColor] = useState("#000000");
-    const [size, setSize] = useState("3");
 
     return (
         <Grid container item className={classes.painter}>
+
             <Grid item justify="center" xs={9} className={classes.paintboard}>
 
                 <Box border={1} className="board-Drawboard">
