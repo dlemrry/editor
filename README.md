@@ -1,6 +1,12 @@
 # editor
 
-dependencies  
+## web application for editing texteditor and painting canvas in real time collaboration.  
+
+___
+(in progress)
+___
+
+### dependencies  
 react, nodejs, express, mysql
 
 
