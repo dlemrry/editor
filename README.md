@@ -17,7 +17,6 @@ in editor/front, run
 in editor/server, run
 ```npm install```
 
-In your editor/server, configure dbaccount.js with your mysql credential.
 
 
 ### Run
