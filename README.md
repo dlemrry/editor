@@ -1,6 +1,6 @@
 # editor
 
-dependencies
+dependencies  
 react, nodejs, express, mysql
 
 
