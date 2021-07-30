@@ -23,4 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # confidential
-./src/socket.js
+/src/socket.js
+/.env/

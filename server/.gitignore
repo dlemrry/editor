@@ -24,3 +24,6 @@ yarn-error.log*
 
 #dbaccount
 dbaccount.js
+
+/uploads/
+/.env/
