@@ -11,7 +11,7 @@ const util = require('util')
 const fs = require('fs');
 
 
-
+/*
 console.log('mysql constructing');
 var conn = mysql.createConnection({
     host: dbaccount.host,
@@ -23,7 +23,7 @@ var conn = mysql.createConnection({
 console.log('mysql establsh');
 conn.connect();
 console.log('mysql connected');
-
+*/
 
 var bodyparser = require('body-parser');
 //var urlencodedparser = bodyparser.urlencoded({extended:false});
@@ -144,7 +144,7 @@ io.on('connection', (socket) => {
         fs.readFile('./uploads/'+file.name,'utf8',function(err,data){
             if (err === null)
             {
-                console.log(data+' read');
+                //console.log(data+' read');
                 //currentdata=data;
                 if(file.type ==='texteditor'){
                     socket.emit('initial',JSON.parse(data));
