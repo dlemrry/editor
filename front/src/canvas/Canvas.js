@@ -22,7 +22,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const useStyles = makeStyles((theme) => ({
     painter: {
-        height: "80vh",
+        height: "650px",
         //padding: theme.spacing(2),
     },
     paintboard: {
@@ -49,7 +49,7 @@ const Canvas = (props) => {
 
     //const {socket} = useParams();
     var loc=useLocation();
-    var file;
+    var file=new Object();
     var users = [];
     const [userlist, setuserlist] = useState(users);
 

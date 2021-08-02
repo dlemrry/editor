@@ -41,6 +41,8 @@ const useStyles = makeStyles((theme) => ({
         height: "100%",
         //flexGrow:1,
         backgroundColor: "#d3d3d3",
+        minWidth:"1300px",
+        //minHeight:"800px"
     },
     leftpaper: {
         padding: theme.spacing(2),
@@ -52,12 +54,16 @@ const useStyles = makeStyles((theme) => ({
         //backgroundColor: "#F6F6F6 ",
         height: "90vh",
         padding: theme.spacing(2),
-        paddingLeft: theme.spacing(4)
+        paddingLeft: theme.spacing(4),
+        //minWidth:"300px"
+        minHeight:"800px"
 
     },
     editorroot: {
         height: "90%",
         padding: theme.spacing(2),
+        //minWidth:"800px"
+        minHeight:"800px"
     },
     plate: {
         height: "10%",

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'white'
     },
     texteditor: {
-        height: "80vh",
+        height: "800px",
     },
     toolbar: {
         height: "100%",
@@ -56,7 +56,7 @@ const Simplequill = (props) => {
     const [userlist, setuserlist] = useState(users);
     var initialcontents;
     var loc = useLocation();
-    var file ;
+    var file=new Object() ;
     useEffect(() => {
 
 
@@ -65,7 +65,9 @@ const Simplequill = (props) => {
         console.log('open texteditor');
 
         if (!loc.state) {
-            file = '';
+            file.name = 'maintexteditor';
+            file.type = 'texteditor';
+            setfilename('maintexteditor');
         } else {
             file= loc.state.file;
             console.log(file.name);
