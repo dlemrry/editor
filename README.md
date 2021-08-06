@@ -32,7 +32,7 @@ And server manage those files distribution with ```userlist```<br>
 #### quill editor  
 <br>
 
-I used Quill for text editor. Quill support [```delta```](https://quilljs.com/docs/delta/#delta) system that managing current editor's contents or users action.
+I used Quill for text editor. Quill supports [```delta```](https://quilljs.com/docs/delta/#delta) system that managing current editor's contents or users action.
 <br>
 Every editor actions like typing or resizing will send socket data to server about the action.
 <br><br>
@@ -40,7 +40,7 @@ There is [react-quill](https://www.npmjs.com/package/react-quill) wrapper for re
 <br>
 This program use ```useRef()``` hook to use [quill.js](https://quilljs.com/docs/quickstart/) that is third party library.
 <br><br>
-Text editor actions are more frequent than painting action. And it's not good to save file contents every time when socket receive by typing.
+Text editor actions are more frequent than painting action. And it's not good to saving file contents every time when socket has arrived by typing.
 <br>
 So server has interval for periodical file saving. 
 
@@ -50,9 +50,9 @@ So server has interval for periodical file saving.
 #### canvas
 <br>
 
-Painting canvas made with ```html-canvas``` element. Canvas detects mouse event listener and draw dots on mouse drag.
+Painting canvas is made with ```html-canvas``` element. Canvas detects mouse event listener and draw dots on mouse drag.
 <br>
-Also, it's not efficient if client send every sockets in single line stroke. So i use timeout method to send socket only when stroke is finally made.
+Also, it's not efficient if client send sockets whithin every dots in single line stroke. So i use timeout method to send socket only when stroke is finally made.
 <br><br>
 
 When stroke made, current canvas image will encoded into .png format with base64 algorithm. Then send it to server.
