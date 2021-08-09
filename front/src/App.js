@@ -206,7 +206,7 @@ function App() {
             <Divider/>
             <List>
                 <ListItem button component={Link} to={{
-                    pathname: "/editor",
+                    pathname: "/editor/maintexteditor",
                     state: {
                         file: {
                             name:'maintexteditor',
@@ -219,7 +219,7 @@ function App() {
                     <ListItemText primary='text editor'/>
                 </ListItem>
                 <ListItem button component={Link} to={{
-                    pathname: "/canvas",
+                    pathname: "/canvas/maincanvas",
                     state: {
                         file: {name:'maincanvas',type:'canvas'}
                     }
@@ -317,7 +317,7 @@ function App() {
                                 {filelist.map((file, index) => {
                                     return file.fileselect == 'text editor' ?
                                         <ListItem key ={index} button component={Link} to={{
-                                            pathname: "/editor",
+                                            pathname: "/editor/"+file.name,
                                             state: {
                                                 file: {name: file.name,type:'texteditor'}
                                             }
@@ -329,7 +329,7 @@ function App() {
 
                                         :
                                         <ListItem key ={index} button component={Link} to={{
-                                            pathname: "/canvas",
+                                            pathname: "/canvas/"+file.name,
                                             state: {
                                                 file: {name: file.name,type:'canvas'}
                                             }
@@ -354,8 +354,8 @@ function App() {
 
                     <Switch>
                         <Route path="/" exact component={Main}></Route>
-                        <Route path="/editor" exact component={Simplequill}/>
-                        <Route path="/canvas" exact component={Canvas}/>
+                        <Route path="/editor/:filename" exact render={props => <Simplequill key={props.match.params.filename || 'empty'} /> }/>
+                        <Route path="/canvas/:filename" exact render={props => <Canvas key={props.match.params.filename || 'empty'} /> }/>
 
                     </Switch>
 
