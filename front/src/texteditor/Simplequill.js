@@ -126,11 +126,16 @@ const Simplequill = (props) => {
                 //console.log(JSON.stringify(delta));
                 socket.emit('send-delta', {delta:delta, name:file.name });
                 console.log('send delta of: '+file.name);
-                socket.emit('updatecontents', {content:editor.getContents(), name:file.name });
+                //socket.emit('updatecontents', {content:editor.getContents(), name:file.name });
                 //console.log(socket.id)
             }
         }); // updatecontents only when source is from other clients
 
+        socket.on('getcontext', () => {
+            console.log('send current context... ');
+            //editor.updateContents(delta);
+            socket.emit('updatecontents', {content:editor.getContents(), name:file.name });
+        });
 
         socket.on('deltaupdate', (delta) => {
             console.log('delta received : ' + JSON.stringify(delta));
@@ -151,7 +156,11 @@ const Simplequill = (props) => {
         return () => {
             console.log('leaving texteditor');
             socket.emit('user-leave',file);
-
+            socket.off("getcontext");
+            socket.off("deltaupdate");
+            socket.off("user-update");
+            socket.off("initial");
+            //socket.removeAllListeners();
             //socket.disconnect();
 
         }

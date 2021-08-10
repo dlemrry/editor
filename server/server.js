@@ -67,7 +67,7 @@ var io = require('socket.io')(https, {cors: {origin: "*"}});
 
 var emptycontents = `{"ops":[{"attributes":{"indent":4},"insert":"\\n"}]}`;
 var emptyimage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==";
-console.log(emptycontents);
+//console.log(emptycontents);
 //var currentcontents = emptycontents;
 var texteditorcontents = new Array();
 
@@ -116,6 +116,26 @@ fs.readdir('./uploads', function (err, filelist) {
 });
 
 const texteditorcontentssave = () => {
+
+    console.log("scan list");
+    for (let i = 0; i < userlist.length; i++) {
+        if(userlist[i].list[0] ){
+            console.log("getting context from : " +userlist[i].list[0].id + ". in "+userlist[i].name);
+            io.to(userlist[i].list[0].id).emit("getcontext");
+/*
+            var index = texteditorcontents.findIndex((element, index, arr) => element.name === userlist[i].name);
+            console.log(texteditorcontents[index].contents);
+            fs.writeFile('./uploads/' + texteditorcontents[index].name, texteditorcontents[index].contents, function (err) {
+                //console.log(texteditorcontents[i].contents);
+                if (err === null) {
+                    //console.log(file+' send saved');
+                } else {
+                    console.log(err);
+                }
+            });*/
+        }
+    }
+/*
     console.log('context saving...');
     for (let i = 0; i < texteditorcontents.length; i++) {
         console.log(texteditorcontents[i].contents);
@@ -127,10 +147,10 @@ const texteditorcontentssave = () => {
                 console.log(err);
             }
         });
-    }
+    }*/
 }
 
-setInterval(texteditorcontentssave, 5000);
+setInterval(texteditorcontentssave, 2000);
 
 
 io.on('connection', (socket) => {
@@ -222,10 +242,22 @@ io.on('connection', (socket) => {
     // make delta variable and set interval writing
     socket.on('updatecontents', (data) => {
 
-        let index = texteditorcontents.findIndex((element, index, arr) => element.name === data.name);
+
+        //let index = texteditorcontents.findIndex((element, index, arr) => element.name === data.name);
         //console.log(data.name+' index : '+index);
         //console.log(JSON.stringify(data.content));
-        texteditorcontents[index].contents = JSON.stringify(data.content);
+
+
+        fs.writeFile('./uploads/' + data.name, JSON.stringify(data.content), function (err) {
+            //console.log(texteditorcontents[i].contents);
+            if (err === null) {
+                console.log(data.content);
+                //console.log(file+' send saved');
+            } else {
+                console.log(err);
+            }
+        });
+        //texteditorcontents[index].contents = JSON.stringify(data.content);
 
     })
 
@@ -336,7 +368,7 @@ io.on('connection', (socket) => {
         console.log('emitting id');
 
         io.to(socket.rooms).emit('user-update', socket.id);
-
+        socket.removeAllListeners();
 
         //io.emit('painter-user-update', texteditoruserlist);
         //io.emit('userupdate', texteditoruserlist);

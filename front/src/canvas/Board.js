@@ -74,6 +74,7 @@ class Board extends React.Component {
     }
     componentWillUnmount(){
             //this.socket.disconnect();
+        this.socket.off("canvas-data");
 
     }
 

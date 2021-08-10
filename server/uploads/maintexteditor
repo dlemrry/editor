@@ -1,1 +1,1 @@
-{"ops":[{"insert":"Welolcme to my ediot "},{"attributes":{"header":1},"insert":"\n"}]}
+{"ops":[{"attributes":{"size":"large"},"insert":"This is main text editor"},{"attributes":{"indent":4},"insert":"\n\n"}]}

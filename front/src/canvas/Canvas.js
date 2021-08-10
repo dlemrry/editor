@@ -107,7 +107,7 @@ const Canvas = (props) => {
         return () => {
             console.log('leaving painter');
             socket.emit('user-leave',file);
-
+            socket.off("user-update");
             //socket.disconnect();
 
         }
