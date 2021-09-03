@@ -1,1 +1,1 @@
-{"ops":[{"attributes":{"size":"large"},"insert":"This is main text editor"},{"attributes":{"indent":4},"insert":"\n\n"}]}
+{"ops":[{"attributes":{"size":"large"},"insert":"this is main text editor"},{"attributes":{"indent":4},"insert":"\n"}]}
