@@ -7,7 +7,9 @@ var http = require("http").Server(app);
 const multer = require('multer');
 const path = require('path');
 var mysql = require('mysql');
-var dbaccount = require('./dbaccount.js');
+var dbaccount = require('./.env/dbaccount.js');
+var awscredential = require('./.env/awscredential.js');
+var aws = require('aws-sdk');
 const util = require('util')
 const fs = require('fs');
 var cors = require('cors')
@@ -52,7 +54,8 @@ const upload = multer({
 
 //var io = require('socket.io')(http, {cors: {origin: "*"}});
 
-var options= {
+//ssl key option
+var options = {
     key: fs.readFileSync('./.env/privkey.pem'),
     cert: fs.readFileSync('./.env/cert.pem'),
     ca: fs.readFileSync('./.env/fullchain.pem'),
@@ -60,7 +63,39 @@ var options= {
     rejectUnauthorized: false
 };
 
-const https = require('https').Server(options,app);
+var conn = mysql.createConnection({
+    host: dbaccount.host,
+    user: dbaccount.user,
+    password: dbaccount.password,
+    port: dbaccount.port,
+    database: dbaccount.database
+});
+
+conn.connect();
+
+var AWS = require('aws-sdk');
+const s3 = new AWS.S3({accessKeyId: awscredential.aws_access_key_id, secretAccessKey: aws_secret_access_key});
+/* //aws s3 bucket
+
+//file upload
+var upparams = {Bucket: 'dglee95', Key: 'filename', Body: 'content'};
+var getparams = {Bucket: 'dglee95', Key: 'filename'};
+
+s3.upload(upparams, function(err, data) {
+ console.log(err, data);
+});
+
+s3.getObject(getparams, function (err, data) {
+
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(data.Body.toString()); //this will log data to console
+    }
+})
+ */
+
+const https = require('https').Server(options, app);
 
 var io = require('socket.io')(https, {cors: {origin: "*"}});
 //var io = require('socket.io').listen(server);
@@ -119,35 +154,35 @@ const texteditorcontentssave = () => {
 
     console.log("scan list");
     for (let i = 0; i < userlist.length; i++) {
-        if(userlist[i].list[0] ){
-            console.log("getting context from : " +userlist[i].list[0].id + ". in "+userlist[i].name);
+        if (userlist[i].list[0]) {
+            console.log("getting context from : " + userlist[i].list[0].id + ". in " + userlist[i].name);
             io.to(userlist[i].list[0].id).emit("getcontext");
-/*
-            var index = texteditorcontents.findIndex((element, index, arr) => element.name === userlist[i].name);
-            console.log(texteditorcontents[index].contents);
-            fs.writeFile('./uploads/' + texteditorcontents[index].name, texteditorcontents[index].contents, function (err) {
+            /*
+                        var index = texteditorcontents.findIndex((element, index, arr) => element.name === userlist[i].name);
+                        console.log(texteditorcontents[index].contents);
+                        fs.writeFile('./uploads/' + texteditorcontents[index].name, texteditorcontents[index].contents, function (err) {
+                            //console.log(texteditorcontents[i].contents);
+                            if (err === null) {
+                                //console.log(file+' send saved');
+                            } else {
+                                console.log(err);
+                            }
+                        });*/
+        }
+    }
+    /*
+        console.log('context saving...');
+        for (let i = 0; i < texteditorcontents.length; i++) {
+            console.log(texteditorcontents[i].contents);
+            fs.writeFile('./uploads/' + texteditorcontents[i].name, texteditorcontents[i].contents, function (err) {
                 //console.log(texteditorcontents[i].contents);
                 if (err === null) {
                     //console.log(file+' send saved');
                 } else {
                     console.log(err);
                 }
-            });*/
-        }
-    }
-/*
-    console.log('context saving...');
-    for (let i = 0; i < texteditorcontents.length; i++) {
-        console.log(texteditorcontents[i].contents);
-        fs.writeFile('./uploads/' + texteditorcontents[i].name, texteditorcontents[i].contents, function (err) {
-            //console.log(texteditorcontents[i].contents);
-            if (err === null) {
-                //console.log(file+' send saved');
-            } else {
-                console.log(err);
-            }
-        });
-    }*/
+            });
+        }*/
 }
 
 setInterval(texteditorcontentssave, 2000);
@@ -379,8 +414,6 @@ io.on('connection', (socket) => {
 })
 
 
-
-
 var server_port = process.env.YOUR_PORT || process.env.PORT || 8000;
 //var server_port = 3001;
 //http.listen(server_port, () => {
@@ -388,7 +421,8 @@ var server_port = process.env.YOUR_PORT || process.env.PORT || 8000;
 
 //})
 https.listen(server_port, () => {
-console.log("Started on : " + server_port);
+    console.log("Started on : " + server_port);
 
 })
+}
 
