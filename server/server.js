@@ -74,7 +74,7 @@ var conn = mysql.createConnection({
 conn.connect();
 
 var AWS = require('aws-sdk');
-const s3 = new AWS.S3({accessKeyId: awscredential.aws_access_key_id, secretAccessKey: aws_secret_access_key});
+const s3 = new AWS.S3({accessKeyId: awscredential.aws_access_key_id, secretAccessKey: awscredential.aws_secret_access_key});
 /* //aws s3 bucket
 
 //file upload
@@ -424,5 +424,5 @@ https.listen(server_port, () => {
     console.log("Started on : " + server_port);
 
 })
-}
+
 
